@@ -7,7 +7,6 @@ import {UserDeviceModel, UserDeviceType} from '../user';
 import {UserModel} from '@roadmanjs/auth';
 import isEmpty from 'lodash/isEmpty';
 import {log} from '@roadmanjs/logs';
-import {awaitTo} from 'couchset/dist/utils';
 import {configureFirebase, FirebaseProject} from '@roadmanjs/firebase-admin';
 import {firebaseAndroid, firebaseIos} from '../config';
 
@@ -80,11 +79,7 @@ export const sendMessageToUser = async (
     options?: MessagingOptions
 ) => {
     try {
-        const [errorUser, existingUser] = await awaitTo(UserModel.findById(owner));
-
-        if (errorUser) {
-            throw new Error('user not found');
-        }
+        const existingUser = await UserModel.findById(owner);
 
         if (existingUser) {
             const userDevices: UserDeviceType[] = await UserDeviceModel.pagination({

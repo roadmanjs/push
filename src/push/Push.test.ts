@@ -24,6 +24,8 @@ describe('Push', () => {
             },
         });
 
+        console.log("sendMessageToUser", sentMessage)
+
         expect(sentMessage).to.be.not.empty;
     });
 });
