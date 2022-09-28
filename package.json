@@ -1,7 +1,7 @@
 {
     "name": "@roadmanjs/push",
     "version": "0.0.1",
-    "description": " An roadman for push notifications",
+    "description": "An roadman for push notifications",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
