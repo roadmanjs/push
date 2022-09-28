@@ -1,7 +1,7 @@
 {
-    "name": "@roadmanjs/auth",
-    "version": "0.0.26",
-    "description": " An auth roadman using a UserType model in Couchbase and firebase-auth",
+    "name": "@roadmanjs/push",
+    "version": "0.0.1",
+    "description": " An roadman for push notifications",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -19,8 +19,7 @@
     "private": false,
     "scripts": {
         "lint": "tslint \"src/**/*.ts\" --project tsconfig.json",
-        "build": "rm -rf dist && ./node_modules/.bin/tsc --skipLibCheck && npm run client",
-        "client": "node dist/script.js",
+        "build": "rm -rf dist && ./node_modules/.bin/tsc --skipLibCheck",
         "test": "mocha src/*test.ts --exit",
         "users": "mocha src/user/*test.ts --exit",
         "eslint": "eslint ./src --fix --ext=ts"
@@ -68,18 +67,17 @@
         "typescript": "^4.4.3"
     },
     "peerDependencies": {
+        "@roadmanjs/auth": ">=0.0.27",
         "@roadmanjs/couchset": ">=0.0.3",
         "@roadmanjs/firebase-admin": ">=0.0.16",
         "@roadmanjs/logs": ">=0.0.1",
         "typescript": ">=2.0"
     },
     "dependencies": {
+        "@roadmanjs/auth": "^0.0.27",
         "@roadmanjs/couchset": "^0.0.3",
-        "@roadmanjs/firebase-admin": "^0.0.16",
+        "@roadmanjs/firebase-admin": "^0.0.17",
         "@roadmanjs/logs": "^0.0.1",
-        "@roadmanjs/utils": "^0.0.4",
-        "graphql-redis-subscriptions": "^2.4.2",
-        "jsonwebtoken": "^8.5.1",
-        "reflect-metadata": "^0.1.13"
+        "@roadmanjs/utils": "^0.0.4"
     }
 }

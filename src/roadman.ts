@@ -1,19 +1,17 @@
 import 'dotenv/config';
 
 import {RoadMan, RoadmanBuild} from '@roadmanjs/core';
-import {UserAuthResolver, UserResolver, UserResolverPublic} from './user';
-
-import {configureFirebase} from '@roadmanjs/firebase-admin';
+import {FIREBASE_SA_ANDROID, FIREBASE_SA_IOS} from './config';
 
 /**
  * An auth roadman using a UserType model in Couchbase and firebase-auth
  * @param RoadmanBuild
  */
-export const authRoadman: RoadMan = async (args: RoadmanBuild): Promise<RoadmanBuild> => {
-    await configureFirebase();
+export const pushRoadman: RoadMan = async (args: RoadmanBuild): Promise<RoadmanBuild> => {
+    if (!FIREBASE_SA_ANDROID || !FIREBASE_SA_IOS) {
+        throw new Error('Please specify FIREBASE_SA_ANDROID and FIREBASE_SA_IOS');
+    }
     return args;
 };
 
-export const getAuthResolvers = () => [UserAuthResolver, UserResolverPublic, UserResolver];
-
-export default authRoadman;
+export default pushRoadman;
