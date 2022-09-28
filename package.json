@@ -20,7 +20,7 @@
     "scripts": {
         "lint": "tslint \"src/**/*.ts\" --project tsconfig.json",
         "build": "rm -rf dist && ./node_modules/.bin/tsc --skipLibCheck",
-        "test": "mocha src/*test.ts --exit",
+        "push": "mocha src/push/*test.ts --exit",
         "users": "mocha src/user/*test.ts --exit",
         "eslint": "eslint ./src --fix --ext=ts"
     },

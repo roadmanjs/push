@@ -1,4 +1,8 @@
-import {MessagingPayload, MessagingOptions} from 'firebase-admin/messaging';
+import {
+    MessagingPayload,
+    MessagingOptions,
+    MessagingDevicesResponse,
+} from 'firebase-admin/messaging';
 import {UserDeviceModel, UserDeviceType} from '../user';
 import {UserModel} from '@roadmanjs/auth';
 import isEmpty from 'lodash/isEmpty';
@@ -14,8 +18,12 @@ interface SendNotification {
     androidTokens: string[];
 }
 
-export const sendNotification = async (args: SendNotification) => {
+export const sendNotification = async (
+    args: SendNotification
+): Promise<MessagingDevicesResponse[] | null> => {
     const {payload, iosTokens = [], androidTokens = []} = args;
+
+    const response: MessagingDevicesResponse[] = [];
 
     const options = args.options || {
         // Required for background/quit data-only messages on iOS
@@ -28,25 +36,35 @@ export const sendNotification = async (args: SendNotification) => {
         const iosClient = await configureFirebase(firebaseIos);
         const androidClient = await configureFirebase(firebaseAndroid);
 
-        const sendMsg = async (client: FirebaseProject, tokens: string[]) => {
+        const sendMsg = async (
+            client: FirebaseProject,
+            tokens: string[]
+        ): Promise<MessagingDevicesResponse | null> => {
             try {
                 const sentMessage = await client.messaging().sendToDevice(tokens, payload, options);
 
                 log('messaging().sendToDevice', JSON.stringify(sentMessage));
+                return sentMessage;
             } catch (error) {
                 log('messaging().sendToDevice', error);
+                return null;
             }
         };
 
         if (!isEmpty(iosTokens)) {
-            await sendMsg(iosClient, iosTokens);
+            const iosSent = await sendMsg(iosClient, iosTokens);
+            response.push(iosSent);
         }
 
         if (!isEmpty(androidTokens)) {
-            await sendMsg(androidClient, androidTokens);
+            const androidSent = await sendMsg(androidClient, androidTokens);
+            response.push(androidSent);
         }
+
+        return response;
     } catch (error) {
         log('error sending notification', error);
+        return null;
     }
 };
 
@@ -83,7 +101,7 @@ export const sendMessageToUser = async (
                     .filter((device) => device.clientType === 'ios')
                     .map((userDevice) => userDevice.pushtoken);
 
-                await sendNotification({
+                return await sendNotification({
                     androidTokens,
                     iosTokens,
                     options,
