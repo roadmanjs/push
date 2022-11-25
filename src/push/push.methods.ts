@@ -17,7 +17,7 @@ export interface PushOptions {
     payload: MessagingPayload;
 }
 
-interface SendToTopic extends PushOptions {
+export interface SendToTopic extends PushOptions {
     topic: string;
     client: FirebaseProject;
 }
@@ -35,7 +35,7 @@ export const sendToTopic = async (args: SendToTopic): Promise<MessagingTopicResp
     }
 };
 
-interface SendMessageToTopic extends PushOptions {
+export interface SendMessageToTopic extends PushOptions {
     topic: string;
 }
 
@@ -84,7 +84,7 @@ export const sendMessageToTopic = async (
     }
 };
 
-interface SendNotification {
+export interface SendNotification {
     options?: MessagingOptions;
     payload: MessagingPayload;
     iosTokens: string[];
