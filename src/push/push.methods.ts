@@ -1,14 +1,39 @@
+import {FirebaseProject, configureFirebase} from '@roadmanjs/firebase-admin';
 import {
-    MessagingPayload,
-    MessagingOptions,
     MessagingDevicesResponse,
+    MessagingOptions,
+    MessagingPayload,
+    MessagingTopicResponse,
 } from 'firebase-admin/messaging';
 import {UserDeviceModel, UserDeviceType} from '../user';
+import {firebaseAndroid, firebaseIos} from '../config';
+
 import {UserModel} from '@roadmanjs/auth';
 import isEmpty from 'lodash/isEmpty';
 import {log} from '@roadmanjs/logs';
-import {configureFirebase, FirebaseProject} from '@roadmanjs/firebase-admin';
-import {firebaseAndroid, firebaseIos} from '../config';
+
+export interface PushOptions {
+    client: FirebaseProject;
+    options?: MessagingOptions;
+    payload: MessagingPayload;
+}
+
+interface SendToTopic extends PushOptions {
+    topic: string;
+}
+
+export const sendToTopic = async (args: SendToTopic): Promise<MessagingTopicResponse | null> => {
+    try {
+        const {client, options, payload, topic} = args;
+        const sentToTopic = await client.messaging().sendToTopic(topic, payload, options);
+
+        log('messaging().sendToTopic', JSON.stringify(sentToTopic));
+        return sentToTopic;
+    } catch (error) {
+        log('messaging().sendToTopic', error);
+        return null;
+    }
+};
 
 interface SendNotification {
     options?: MessagingOptions;
