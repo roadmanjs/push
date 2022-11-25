@@ -13,13 +13,13 @@ import isEmpty from 'lodash/isEmpty';
 import {log} from '@roadmanjs/logs';
 
 export interface PushOptions {
-    client: FirebaseProject;
     options?: MessagingOptions;
     payload: MessagingPayload;
 }
 
 interface SendToTopic extends PushOptions {
     topic: string;
+    client: FirebaseProject;
 }
 
 export const sendToTopic = async (args: SendToTopic): Promise<MessagingTopicResponse | null> => {
@@ -31,6 +31,55 @@ export const sendToTopic = async (args: SendToTopic): Promise<MessagingTopicResp
         return sentToTopic;
     } catch (error) {
         log('messaging().sendToTopic', error);
+        return null;
+    }
+};
+
+interface SendMessageToTopic extends PushOptions {
+    topic: string;
+}
+
+export const sendMessageToTopic = async (
+    args: SendMessageToTopic
+): Promise<MessagingTopicResponse[] | null> => {
+    const {payload, topic} = args;
+
+    const response: MessagingTopicResponse[] = [];
+
+    const options = args.options || {
+        // Required for background/quit data-only messages on iOS
+        contentAvailable: true,
+        // Required for background/quit data-only messages on Android
+        priority: 'high',
+    };
+
+    try {
+        const iosClient = await configureFirebase(firebaseIos);
+        const androidClient = await configureFirebase(firebaseAndroid);
+
+        if (iosClient) {
+            const iosSent = await sendToTopic({
+                client: iosClient,
+                options,
+                payload,
+                topic,
+            });
+            response.push(iosSent);
+        }
+
+        if (androidClient) {
+            const androidSent = await sendToTopic({
+                client: androidClient,
+                options,
+                payload,
+                topic,
+            });
+            response.push(androidSent);
+        }
+
+        return response;
+    } catch (error) {
+        log('error sending notification to topic', error);
         return null;
     }
 };
